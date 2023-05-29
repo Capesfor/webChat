@@ -1,0 +1,12 @@
+{
+  "name": "socket-capesfor",
+  "version": "0.0.1",
+  "description": "my first use of socket.io and the project my Snapchat",
+  "dependencies": {
+    "@types/express": "^4.17.17",
+    "config": "^3.3.9",
+    "express": "^4.18.2",
+    "mongodb": "^5.5.0",
+    "socket.io": "^4.6.1"
+  }
+}
