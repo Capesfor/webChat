@@ -6,10 +6,10 @@ const server = http.createServer(app);
 const socketServ = require("socket.io");
 const io = socketServ(server,{cors: {origin: '*',methods: ['GET', 'POST'],}});
 const  { connectionToDb } = require('./db.js');
+//const c = require("config");
 let users = {};
 let i = 0;
 let db;
-let rooms = {"general" : []};
 
 connectionToDb().then((res) => {
     db = res;
@@ -18,29 +18,33 @@ connectionToDb().then((res) => {
     console.log(err)
 })
 
-
-
-
-
-
-
-function sendMsg(msg, user) {
-
+function getRooms() {
+  let rooms = [];
   for (let key in users) {
-    if (key !== user && users[key].room === users[user].room) {
-      io.to(key).emit("message", { user : users[user].name, msg:msg })
+    if (rooms.indexOf(users[key].room) === -1) {
+      rooms.push(users[key].room)
     }
   }
+  return rooms;
+}
 
+
+
+
+
+
+function sendMsg(msg, userS) {
+  console.log("sendMsg", msg, userS)
+      io.to(users[userS].room).emit("message", { user : users[userS].name, msg:msg })
 }
 
 
 io.on("connection", socket => {
     if (users[socket.id] === undefined) {
         users[socket.id] = {name : `user${i}`, room: "general"};
-        rooms["general"].push(users[socket.id].name)
+        socket.join("general");
         console.log("user connected", users[socket.id], )
-        socket.emit("your id", { name : users[socket.id].name, id: socket.id });
+        socket.emit("your id", { name : users[socket.id].name, id : socket.id , room : users[socket.id].room});
         i++;
     }
     socket.on("received", () => {
@@ -50,6 +54,13 @@ io.on("connection", socket => {
         }
         console.log(users[socket.id], "received")
     })
+
+    socket.on("/list", body => {
+      console.log("list", body)
+      socket.emit("list", getRooms())
+    })
+
+
     socket.on("send message", body => {
       //console.log("message", body, users[socket.id])
       sendMsg(body, socket.id)
