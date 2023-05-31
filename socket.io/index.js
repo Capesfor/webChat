@@ -10,6 +10,13 @@ const  { connectionToDb } = require('./db.js');
 let users = {};
 let i = 0;
 let db;
+let rooms = ["general"];
+let serverDB = {
+  users : {},
+  messages : [],
+  rooms : ["general"],
+  id : 0
+}
 
 connectionToDb().then((res) => {
     db = res;
@@ -18,16 +25,48 @@ connectionToDb().then((res) => {
     console.log(err)
 })
 
-function getRooms() {
-  let rooms = [];
-  for (let key in users) {
-    if (rooms.indexOf(users[key].room) === -1) {
-      rooms.push(users[key].room)
-    }
+function createRooms(room) {
+  if (rooms.indexOf(room) === -1) {
+    console.log("createRooms", room)
+    //rooms.push(room)
+    serverDB[rooms].push(room)
+    return `creation of "${room}" : success`;
   }
-  return rooms;
+  return "error in the syntax or server already exist please try again";
 }
 
+function deleteRooms(room) {
+  if (server.dbrooms.indexOf(room) !== -1) {
+    console.log("deleteRooms", room)
+    //rooms.splice(rooms.indexOf(room), 1)
+    serverDB.rooms.splice(serverDB[rooms].indexOf(room), 1)
+    return `deletion of "${room }" success`;
+  }
+  return `deletion of "${room }" error in the syntax or else please try again`;
+}
+
+function join(userS, room) {
+  if (serverDB.rooms.indexOf(room) === -1) {
+    return `join "${room}" : error in the syntax or server does not exist please try again`;
+  }
+  if (users[userS].room === room) {
+    return `join "${room}" : error you are already in this server`;
+  }
+  users[userS].room = room;
+
+  console.log("join", rooms)
+  return `join "${room}" : success`;
+}
+
+function getsUsers(userS) {
+  let usersInRoom = [];
+  for (const [key, value] of Object.entries(users)) {
+    if (value.room === users[userS].room) {
+      usersInRoom.push(value.name)
+    }
+  }
+  return usersInRoom;
+}
 
 
 
@@ -35,16 +74,17 @@ function getRooms() {
 
 function sendMsg(msg, userS) {
   console.log("sendMsg", msg, userS)
-      io.to(users[userS].room).emit("message", { user : users[userS].name, msg:msg })
+      io.to(serverDB.users[userS].room).emit("message", { user : serverDB.users[userS].name, msg:msg })
 }
 
 
 io.on("connection", socket => {
     if (users[socket.id] === undefined) {
-        users[socket.id] = {name : `user${i}`, room: "general"};
+        //sers[socket.id] = {name : `user${i}`, room: "general"};
+        serverDB.users[socket.id] = {name : `user${i}`, room: "general"};
         socket.join("general");
-        console.log("user connected", users[socket.id], )
-        socket.emit("your id", { name : users[socket.id].name, id : socket.id , room : users[socket.id].room});
+        console.log("user connected", serverDB.users[socket.id], )
+        socket.emit("your id", { name : serverDB.users[socket.id].name, id : socket.id , room : serverDB.users[socket.id].room});
         i++;
     }
     socket.on("received", () => {
@@ -56,13 +96,41 @@ io.on("connection", socket => {
     })
 
     socket.on("/list", body => {
-      console.log("list", body)
-      socket.emit("list", getRooms())
+      console.log("list", rooms)
+      socket.emit("list", rooms)
     })
 
+    socket.on("/leave", body => {
+      console.log("leave", rooms)
+      users[socket.id].room = "general";
+      socket.emit("leave", "back to general")
+    })
+
+    socket.on("/join", body => {
+      console.log("join", body)
+      socket.emit("join", join(socket.id, body.post))
+    })
+
+    socket.on("/users", body => {
+      console.log("users", body)
+      socket.emit("users", getsUsers(socket.id))
+    })
+
+    socket.on("/create", body => {
+      //console.log("create", body)
+      //console.log("rooms", rooms)
+      socket.emit("create", createRooms(body.post))
+    })
+
+    socket.on("/delete", body => {
+      console.log("delete", body)
+      //console.log("delete", deleteRooms(body))
+      socket.emit("/delete", deleteRooms(body))
+    })
 
     socket.on("send message", body => {
       //console.log("message", body, users[socket.id])
+      serverDB.messages.push({user : serverDB.users[socket.id].name, msg:body})
       sendMsg(body, socket.id)
         //io.to.() emit("message", { user : users[socket.id], msg:body })
     })
@@ -71,8 +139,8 @@ io.on("connection", socket => {
       socket.broadcast.emit("rename", name)
 })
     socket.on("disconnect", () => {
-      console.log("user disconnected", users[socket.id].name)
-      socket.broadcast.emit("user disconnected", users[socket.id])
+      console.log("user disconnected", serverDB.users[socket.id].name)
+      socket.broadcast.emit("user disconnected", serverDB.users[socket.id])
       delete users[socket.id]
     })
 })
