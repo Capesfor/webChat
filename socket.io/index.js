@@ -60,11 +60,12 @@ function join(userS, room) {
 
 function getsUsers(userS) {
   let usersInRoom = [];
-  for (const [key, value] of Object.entries(users)) {
-    if (value.room === users[userS].room) {
-      usersInRoom.push(value.name)
+  for (let user in serverDB.users) {
+    if (serverDB.users[user].room === serverDB.users[userS].room) {
+      usersInRoom.push(serverDB.users[user].name)
     }
   }
+  console.log("getsUsers", usersInRoom)
   return usersInRoom;
 }
 
@@ -141,9 +142,10 @@ io.on("connection", socket => {
     socket.on("disconnect", () => {
       console.log("user disconnected", serverDB.users[socket.id].name)
       socket.broadcast.emit("user disconnected", serverDB.users[socket.id])
-      delete users[socket.id]
+      delete serverDB.users[socket.id]
     })
 })
 
 
 server.listen(8000, () => console.log(`Listening on port:${8000}}...`));
+

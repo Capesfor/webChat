@@ -36,7 +36,7 @@ import UserInput from "./userinput";
         tmp += data[i] + ", ";
     }
   }
-    setMessage([...message,{user : "server", msg : {post: tmp}}]);
+    setMessage([...message,{user : "SERVER", msg : {post: tmp}}]);
     console.log(data);
   });
 
@@ -68,13 +68,20 @@ import UserInput from "./userinput";
       });
     
     return (
-      <div className='chat'>
-        <div className='user-chat'>
-          <div className="user-chat-header">USER</div>
-          <div className='messages text-black'>
+      <div className='chat rounded'>
+        <div className='user-chat rounded'>
+          <div className="user-chat-header rounded">USER</div>
+          <div className='messages  rounded'>
           {message.map((p : any,index : number)=>(
-        <li key={index}>from {p.user} : {p.msg.post}</li>
-      ))}
+            // p.user == "SERVER" ?
+            //   <li key={index} className='text-red-900'>from {p.user} : {p.msg.post}</li>
+            // :
+            <div className={ p.user == "SERVER" ? 'text-red-900' : 'text-black'}>
+
+              <li key={index} >from {p.user} : {p.msg.post}</li>
+            </div>
+          )
+      )}
           </div>
           <div className='input-area'>
           <UserInput socket={socket} message={message} setMessage={setMessage} input={input} setInput={setInput}/>

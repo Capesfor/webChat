@@ -25,7 +25,7 @@ function useSocket(url : string) {
 export default function Home() {
   const [input,setInput] = useState("");
   const [userData,setUserData] = useState({});
-  const [message,setMessage] = useState([]);
+  const [message,setMessage] = useState([ {user : "SERVER", msg : {post: "welcome to the chat"}}]);
   const socket = useSocket("http://localhost:8000");
   
     
