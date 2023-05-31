@@ -32,6 +32,7 @@ export default function Home() {
     socket?.on("your id",(data : object) => {
       console.log(data);
       setUserData(data);
+      setMessage(data.msg);
     });
 
   socket?.on("rename",(data: any) => {
@@ -44,7 +45,7 @@ export default function Home() {
   return (
       
       <div className="w-90">
-      <Chat socket={socket} message={message} setMessage={setMessage} input={input} setInput={setInput}/>
+      <Chat socket={socket} message={message} setMessage={setMessage} input={input} setInput={setInput} userData={userData}/>
       </div>
   )
 }

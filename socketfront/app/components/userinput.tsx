@@ -6,7 +6,7 @@ export default function UserInput({socket,message,setMessage,input, setInput}: {
     const  mySplit = (input: string) => {
         let tmp = input.split(" ");
             if (tmp.length != 2) {
-              setMessage([...message,{user : "server", msg : {post: "error to many or few arguments"}}]);
+              setMessage([...message,{user : "SERVER", msg : {post: "error to many or few arguments"}}]);
               return "";
             }
             return tmp[1];

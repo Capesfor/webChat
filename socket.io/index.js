@@ -85,7 +85,7 @@ io.on("connection", socket => {
         serverDB.users[socket.id] = {name : `user${i}`, room: "general"};
         socket.join("general");
         console.log("user connected", serverDB.users[socket.id], )
-        socket.emit("your id", { name : serverDB.users[socket.id].name, id : socket.id , room : serverDB.users[socket.id].room});
+        socket.emit("your id", { name : serverDB.users[socket.id].name, id : socket.id , room : serverDB.users[socket.id].room, msg : serverDB.messages});
         i++;
     }
     socket.on("received", () => {
