@@ -77,7 +77,7 @@ import UserInput from "./userinput";
             // p.user == "SERVER" ?
             //   <li key={index} className='text-red-900'>from {p.user} : {p.msg.post}</li>
             // :
-            <div className={ p.user == "SERVER" ? 'text-red-900' : 'text-black'}>
+            <div key={index} className={ p.user == "SERVER" ? 'text-red-900' : 'text-black'}>
 
               <li key={index} >from {p.user} : {p.msg.post}</li>
             </div>
