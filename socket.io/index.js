@@ -6,7 +6,7 @@ const server = http.createServer(app);
 const socketServ = require("socket.io");
 const io = socketServ(server,{cors: {origin: '*',methods: ['GET', 'POST'],}});
 const  { connectionToDb } = require('./db.js');
-const  { createRooms, deleteRooms, join, getsUsers, sendMsg, creation, checkUser, leave, rename, getServer } = require ('./dataHandling.js');
+const  { createRooms, deleteRooms, join, getsUsers, sendMsg, creation, checkUser, leave, rename, getServer,disconnect } = require ('./dataHandling.js');
 //const c = require("config");
 let users = {};
 let db;
@@ -30,8 +30,7 @@ io.on("connection", socket => {
 
     socket.on("/list", body => {
       socket.emit("list", getServer(socket) )
-      console.log("list", rooms)
-    })
+      console.log("list", rooms) })
 
     socket.on("/leave", body => {
       socket.emit("leave", leave(socket, body.post))
@@ -61,7 +60,7 @@ io.on("connection", socket => {
 
     socket.on("send message", body => {
       //console.log("message", body, users[socket.id])
-      sendMsg(body, socket.id)
+      sendMsg(body, socket, io)
         //io.to.() emit("message", { user : users[socket.id], msg:body })
     })
     socket.on("rename", name => {
@@ -69,12 +68,9 @@ io.on("connection", socket => {
       rename(socket, name)
 })
     socket.on("disconnect", () => {
-      console.log("user disconnected", serverDB.users[socket.id].name)
-      socket.broadcast.emit("user disconnected", serverDB.users[socket.id])
-      delete serverDB.users[socket.id]
-    })
+      disconnect(socket)
 })
-
+})
 
 server.listen(8000, () => console.log(`Listening on port:${8000}}...`));
 

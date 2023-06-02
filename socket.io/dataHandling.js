@@ -1,8 +1,7 @@
 
 let serverDB = {
     users : {},
-    messages : [],
-    rooms : ["general"],
+    rooms : {"general" : {messages : []}},
     id : 0
   }
 
@@ -32,7 +31,7 @@ function checkUser(socket) {
         delete serverDB.users[socket.id]
         return;
     }
-    console.log(serverDB.users[socket.id], "received")
+    //console.log(serverDB.users[socket.id], "received")
 }
 
 function creation(socket) {
@@ -41,7 +40,7 @@ function creation(socket) {
         serverDB.users[socket.id] = {name : `user${serverDB.id}`, rooms: ["general"], active: "general" };
         socket.join("general");
         console.log("user connected", serverDB.users[socket.id], )
-        socket.emit("your id", { name : serverDB.users[socket.id].name, id : socket.id , room : serverDB.users[socket.id].room, msg : serverDB.messages});
+        socket.emit("your id", { name : serverDB.users[socket.id].name, id : socket.id , room : serverDB.users[socket.id].active, msg : serverDB.rooms[serverDB.users[socket.id].active].messages});
         serverDB.id++;
     }
 }
@@ -88,6 +87,12 @@ function createRooms( socket, room) {
     return `join "${room}" : success`;
   }
   
+  function disconnect(socket) {
+    console.log("user disconnected", serverDB.users[socket.id].name)
+      socket.broadcast.emit("user disconnected", serverDB.users[socket.id])
+      delete serverDB.users[socket.id]
+    }
+
   function getsUsers(userS) {
     let usersInRoom = [];
     for (let user in serverDB.users) {
@@ -100,10 +105,11 @@ function createRooms( socket, room) {
   }
   
   
-  function sendMsg(msg, userS) {
-    console.log("sendMsg", msg, userS)
-    serverDB.messages.push({user : serverDB.users[socket.id].name, msg:body})
-    io.to(serverDB.users[userS].active).emit("message", { user : serverDB.users[userS].name, msg:msg })
+  function sendMsg(msg, socket, io) {
+    console.log("sendMsg", msg)
+    const message = {user : serverDB.users[socket.id].name, msg:msg}
+    serverDB.rooms[serverDB.users[socket.id].active].messages.push(message)
+    io.to(serverDB.users[socket.id].active).emit("message", message)
   }
 
-module.exports = { createRooms, deleteRooms, join, getsUsers, sendMsg, creation, checkUser, leave, rename, getServer };
+module.exports = { createRooms, deleteRooms, join, getsUsers, sendMsg, creation, checkUser, leave, rename, getServer, disconnect };
