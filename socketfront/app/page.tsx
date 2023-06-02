@@ -2,6 +2,8 @@
 import React, {useEffect, useState} from 'react';
 import {io} from 'socket.io-client';
 import Chat from './components/boxTchat'
+import UserList from './components/userList';
+import ServerList from './components/serverList';
 
 function useSocket(url : string) {
   const [socket, setSocket] = useState<any>()
@@ -43,9 +45,20 @@ export default function Home() {
     return <div>loading...</div>
   }
   return (
-      
-      <div className="w-90">
-      <Chat socket={socket} message={message} setMessage={setMessage} input={input} setInput={setInput} userData={userData}/>
+    <main className="flex flex-row">
+
+      <div className="w-1/2 pt-7 ">
+        <ServerList socket={socket}/>
       </div>
+
+      <div className="w-full p-4 ">
+        <Chat socket={socket} message={message} setMessage={setMessage} input={input} setInput={setInput} userData={userData}/>
+      </div>
+
+      <div className='w-1/2 pt-7'>
+        <UserList socket={socket}/ >
+      </div>
+
+    </main>
   )
 }
