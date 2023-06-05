@@ -6,7 +6,7 @@ const server = http.createServer(app);
 const socketServ = require("socket.io");
 const io = socketServ(server,{cors: {origin: '*',methods: ['GET', 'POST'],}});
 const  { connectionToDb } = require('./db.js');
-const  { createRooms, deleteRooms, join, getsUsers, sendMsg, creation, checkUser, leave, rename, getServer,disconnect } = require ('./dataHandling.js');
+const  { createRooms, deleteRooms, join, getsUsers, sendMsg, creation, checkUser, leave, rename, getServer,disconnect, getUserData } = require ('./dataHandling.js');
 //const c = require("config");
 let users = {};
 let db;
@@ -39,6 +39,11 @@ io.on("connection", socket => {
     socket.on("/join", body => {
       console.log("join", body)
       socket.emit("join", join(socket, body))
+    })
+
+    socket.on("getUserData", body => {
+      console.log("get_user_data", body)
+      socket.emit("getUserData", getUserData(socket))
     })
 
     socket.on("/users", body => {

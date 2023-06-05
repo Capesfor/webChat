@@ -5,7 +5,7 @@ import userInput from "./userinput";
 import UserInput from "./userinput";
  // create a template components
 
- export default function Chat ({socket,message,setMessage, input, setInput, userData}: {socket: Socket,message: any,setMessage: any, input : any, setInput : any, userData: any}) {
+ export default function Chat ({socket,message,setMessage, input, setInput, userData, setUserData}: {socket: Socket,message: any,setMessage: any, input : any, setInput : any, userData: any, setUserData: any}) {
 
   socket?.on("create",(data: any) => {
     setMessage([...message,{user : "SERVER", msg : {post: data}}]);
@@ -62,6 +62,11 @@ import UserInput from "./userinput";
     setMessage(message);
   });
 
+  socket?.on("getUserData",(data: any) => {
+    console.log(data);
+    setUserData(data);
+  });
+
   socket?.on("message",(data: any) => {
     //console.log(data);
     setMessage([...message,data]);
@@ -75,7 +80,7 @@ import UserInput from "./userinput";
     return (
       <div className='chat rounded'>
         <div className='user-chat rounded'>
-          <div className="user-chat-header rounded">{userData.name} in {userData.room}</div>
+          <div className="user-chat-header rounded">{userData.name} in {userData.active}</div>
           <div className='messages  rounded'>
           {message.map((p : any,index : number)=>(
             // p.user == "SERVER" ?

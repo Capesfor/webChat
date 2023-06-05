@@ -43,8 +43,7 @@ function creation(socket) {
         serverDB.users[socket.id] = {name : `user${serverDB.id}`, rooms: ["general"], active: "general" };
         socket.join("general");
         console.log("user connected", serverDB.users[socket.id], )
-        socket.emit("your id", { name : serverDB.users[socket.id].name, id : socket.id , room : serverDB.users[socket.id].active, msg : serverDB.rooms[serverDB.users[socket.id].active].messages});
-        socket.emit("your id", { name : serverDB.users[socket.id].name, id : socket.id , room : serverDB.users[socket.id].active, msg : serverDB.rooms[serverDB.users[socket.id].active].messages});
+        socket.emit("your id", { name : serverDB.users[socket.id].name, id : socket.id , active : serverDB.users[socket.id].active, msg : serverDB.rooms[serverDB.users[socket.id].active].messages});
         getsUsers(socket)
         getServer(socket)
         serverDB.id++;
@@ -77,6 +76,11 @@ function createRooms( socket, room) {
     socket.emit("serverList", serverDB.users[socket.id].rooms);
   }
 
+  function getUserData(socket) {
+    console.log("getting data of the user")
+    socket.emit("getUserData", serverDB.users[socket.id]);
+  }
+
   function deleteRooms(room) {
     if (serverDB.rooms.indexOf(room) !== -1) {
       console.log("deleteRooms", room)
@@ -102,6 +106,7 @@ function createRooms( socket, room) {
     getsUsers(socket)
     getMessages(socket)
     getServer(socket)
+    getUserData(socket)
     console.log("join", room)
     return `join "${room}" : success`;
   }
@@ -149,4 +154,4 @@ function createRooms( socket, room) {
     io.to(serverDB.users[socket.id].active).emit("message", message)
   }
 
-module.exports = { createRooms, deleteRooms, join, getsUsers, sendMsg, creation, checkUser, leave, rename, getServer, disconnect };
+module.exports = { createRooms, deleteRooms, join, getsUsers, sendMsg, creation, checkUser, leave, rename, getServer, disconnect, getUserData };

@@ -30,6 +30,7 @@ export default function Home() {
   const [message,setMessage] = useState([ {user : "SERVER", msg : {post: "welcome to the chat"}}]);
   const socket = useSocket("http://localhost:8000");
   
+  
     
     socket?.on("your id",(data : object) => {
       console.log(data);
@@ -52,7 +53,7 @@ export default function Home() {
       </div>
 
       <div className="w-full p-4 ">
-        <Chat socket={socket} message={message} setMessage={setMessage} input={input} setInput={setInput} userData={userData}/>
+        <Chat socket={socket} message={message} setMessage={setMessage} input={input} setInput={setInput} setUserData={setUserData} userData={userData}/>
       </div>
 
       <div className='w-1/2 pt-7'>
