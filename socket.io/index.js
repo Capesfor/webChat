@@ -33,7 +33,7 @@ io.on("connection", socket => {
       console.log("list", rooms) })
 
     socket.on("/leave", body => {
-      socket.emit("leave", leave(socket, body.post))
+      socket.emit("leave", leave(socket, body))
     })
 
     socket.on("/join", body => {

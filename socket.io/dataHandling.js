@@ -17,13 +17,14 @@ function rename(socket, name) {
 }
 
 function leave(socket, room ) {
-    if (serverDB.rooms[room] === undefined) {
+  console.log(serverDB.users[socket.id].rooms.indexOf(room), "leave")
+    if (serverDB.users[socket.id].rooms.indexOf(room)) {
+      console.log("leave", room)
         socket.leave(room);
         serverDB.users[socket.id].rooms.splice(serverDB.users[socket.id].rooms.indexOf(room), 1);
         serverDB.users[socket.id].active = "general";
         getServer(socket)
         getsUsers(socket)
-        console.log("leave", serverDB.users[socket.id].rooms)
         return `leave "${room}" : success`;
     }
     return `leave "${room}" : error in the syntax or server does not exist please try again`;
