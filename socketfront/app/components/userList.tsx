@@ -13,7 +13,9 @@ export default function UserList({socket}: {socket: Socket}) {
     socket.on("user joined", (user) => {
         socket.emit("usersList");
     });
-
+    if(users.length == 0) {
+        return (<div>loading Users</div>)
+    }
 
     return (
     <>

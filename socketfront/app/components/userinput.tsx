@@ -58,7 +58,7 @@ export default function UserInput({socket,message,setMessage,input, setInput}: {
           let tmp = mySplit(input);
           if (tmp == "")
             return;
-          socket.emit("/join",{post:tmp});
+          socket.emit("/join",tmp);
           setInput("");
           return;
         };

@@ -57,6 +57,10 @@ import UserInput from "./userinput";
     console.log(data);
   });
 
+  socket?.on("getMessages",(message: any) => {
+    console.log(message);
+    setMessage(message);
+  });
 
   socket?.on("message",(data: any) => {
     //console.log(data);
