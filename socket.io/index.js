@@ -38,12 +38,12 @@ io.on("connection", socket => {
 
     socket.on("/join", body => {
       console.log("join", body)
-      socket.emit("join", join(socket, body.post))
+      socket.emit("join", join(socket, body))
     })
 
     socket.on("/users", body => {
       console.log("users", body)
-      socket.emit("users", getsUsers(socket.id))
+      socket.emit("users", getsUsers(socket))
     })
 
     socket.on("/create", body => {
