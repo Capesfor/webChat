@@ -11,6 +11,10 @@ export default function ServerList({socket}: {socket: Socket}) {
         
     }
 
+    const handleLeave = ( server: any) => {
+        socket.emit("/leave", server.target.dataset.value);
+    }
+
     socket.on("serverList", (servers) => {
         console.log(servers);
         setServers(servers);
@@ -20,10 +24,19 @@ export default function ServerList({socket}: {socket: Socket}) {
     <>
         <div className="bg-blue-800  w-full">
             {servers.map((server,i) => {
-              return (  <li key={i} >
-
+              return (
+                  
+                //   <li key={i} >
+                  <div className="break-normal space-x-10">
                   <button onClick={handleserver} data-value={server}  key={i} className="text-white">{server}</button>
-              </li>
+                  
+                    { server == "general" ? <></> : <button onClick={handleLeave} data-value={server} className=" text-red-900 inset-y-0 right-0">DEL</button>
+
+                    }
+                    {/* <button onClick={handleLeave} data-value={server} className=" text-red-900 inset-y-0 right-0">DEL</button> */}
+                  
+                </div>  
+            //   </li>
                   )
             }
             )}
